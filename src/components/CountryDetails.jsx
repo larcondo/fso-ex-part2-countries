@@ -1,8 +1,18 @@
+import { useEffect, useState } from 'react'
+import weatherService from '../services/weather'
+
 const CountryDetails = ({ country }) => {
-  
-  const imgStyle = {
-    border: '2px solid #dedede'
-  }
+  const [weather, setWeather] = useState(null)
+
+  const imgStyle = { border: '2px solid #dedede' }
+
+  useEffect(() => {
+    weatherService
+      .getWeather(country.capital)
+      .then( data => {
+        setWeather(data) 
+      })
+  }, [])
 
   return(
     <div>
@@ -19,8 +29,21 @@ const CountryDetails = ({ country }) => {
           })
         }
       </ul>
+
       {/* <img src={list[0].flags.png} alt="Flag" width="200px" style={imgStyle} /> */}
       <img src={country.flags.svg} alt="Flag" width="200px" style={imgStyle} />
+
+      <h2>Weather in { country.capital }</h2>
+      { weather &&
+        <>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <img src={weather.current.condition.icon} alt='Condition' />
+            <p>{weather.current.condition.text}</p>
+          </div>
+          <p>temperature { weather.current.temp_c.toFixed(1) } °C</p>
+          <p>wind { weather.current.wind_kph } m/s</p>
+        </>
+      }
     </div>
   )
 }
